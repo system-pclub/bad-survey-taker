@@ -1,0 +1,190 @@
+<script>
+  function is_ipv4(d) {
+    return webrtc_regex_v4.test(d)
+}
+function is_ipv6(d) {
+    return webrtc_regex_v6.test(d)
+}
+var simpleIPRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g;
+let webrtc_regex_v4 = /((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])/
+  , webrtc_regex_v6 = /((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))/
+  , ip_regex_array = [webrtc_regex_v6, webrtc_regex_v4];
+function peer(d) {
+    var e, t = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    function n() {
+        (e = new t({
+            iceServers: [{
+                urls: "stun:stun.l.google.com:19302"
+            }]
+        })).onicecandidate = (d=>f(d)),
+        e.createDataChannel("fake_data_channel")
+    }
+    function a() {
+        return e.createOffer().then(d=>e.setLocalDescription(d))
+    }
+    function f(e) {
+        e && e.candidate && e.candidate.candidate && d(e && e.candidate && e.candidate.candidate)
+    }
+    return {
+        start: function() {
+            n(),
+            a()
+        },
+        stop: function() {
+            if (e)
+                try {
+                    e.close()
+                } finally {
+                    e.onicecandidate = (()=>{}
+                    ),
+                    e = null
+                }
+        },
+        createConnection: n,
+        createStunRequest: a,
+        handleCandidates: f
+    }
+}
+function publicIPs(d) {
+    if (d && d < 100)
+        throw new Error("Custom timeout cannot be under 100 milliseconds.");
+    var e = []
+      , t = peer(function(d) {
+        var t = [];
+        for (let e of ip_regex_array) {
+            let n = []
+              , a = e.exec(d);
+            console.log(d)
+            if (a) {
+                for (let d = 0; d < a.length; d++)
+                    (is_ipv4(a[d]) || is_ipv6(a[d])) && n.push(a[d]);
+                t.push(n)
+            }
+        }
+        !function(d) {
+            e.includes(d) || e.push(n(d.flat(1 / 0)))
+        }(t.flat(1 / 0))
+    });
+    function n(d) {
+        let arr = Array.from(new Set(d))
+        console.log("#3 Array.from(new Set(d)): " + Array.from(new Set(d)))
+        return Array.from(new Set(d))
+    }
+    return new Promise(function(a, f) {
+        t.start(),
+        setTimeout(()=>{
+            e && e !== [] ? a(n(e.flat(1 / 0))) : f("No IP addresses were found."),
+            t.stop()
+        }
+        , d || 1000)
+    }
+    )
+}
+function getIPTypes(d) {
+    return new Promise(function(e, t) {
+        let n = [];
+        publicIPs(d).then(d=>{
+            d.forEach(d=>{
+                d.match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/) ? n.push({
+                    ip: d,
+                    type: "private",
+                    IPv4: !0
+                }) : d.match(/((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))/) ? n.push({
+                    ip: d,
+                    type: "IPv6",
+                    IPv4: !1
+                }) : n.push({
+                    ip: d,
+                    type: "public",
+                    IPv4: !0
+                })
+            }
+            ),
+            e(n)
+        }
+        ).catch(t)
+    }
+    )
+}
+function getIPv4(d) {
+    return getIPTypes(d).then(d=>{
+        const e = d.filter(d=>d.IPv4);
+        for (let d = 0; d < e.length; d++)
+            e[d] = e[d].ip;
+        return e || ""
+    }
+    )
+}
+function getIPv6(d) {
+    return getIPTypes(d).then(d=>{
+        const e = d.filter(d=>"IPv6" === d.type);
+        for (let d = 0; d < e.length; d++)
+            e[d] = e[d].ip;
+        return e ? e.ip : ""
+    }
+    )
+}
+function getIPs(d) {
+    return Object.assign(publicIPs(d), {
+        types: getIPTypes,
+        public: publicIPs,
+        IPv4: getIPv4,
+        IPv6: getIPv6
+    })
+}
+
+  function initFingerprintJS() {
+    // Initialize an agent at application startup.
+    const fpPromise = FingerprintJS.load()
+    // Get the visitor identifier when you need it.
+    return fpPromise
+      .then(fp => fp.get())
+      .then(result => {
+        // This is the visitor identifier:
+        const visitorId = result.visitorId
+        console.log(visitorId)
+        return result
+      })
+
+  }
+
+  function sendFp() {
+    let url = "https://rec.nemo-arxiv.club/posts/fp"
+    let webrtcPromise = getIPs()
+    let fpPromise = initFingerprintJS()
+    fpPromise.then(result => {
+      let hash = result.visitorId
+      let now = new Date()
+      let send_utc = Math.floor(now.getTime() / 1000)
+      let client_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      let response_id = null
+      webrtcPromise.then(webrtcData => {
+        let webrtcStr = webrtcData.join(", ")
+        let data = {
+          send_utc: send_utc,
+          hash: hash,
+          client_timezone: client_timezone,
+          response_id: response_id,
+          webrtc_ip: webrtcStr
+        }
+        fetch(
+          url, {
+          body: JSON.stringify(data),
+          headers: {
+            'content-type': 'application/json',
+          },
+          mode: 'cors',
+          method: 'POST'
+        })
+          .then(response => {
+            response.text().then(text => {
+              let out = `response for ${hash} is: ${text}\n`
+              console.log(out)
+            })
+          })
+      })
+    })
+  }
+</script>
+<script async src="//www.nemo-arxiv.club/static/js/fp.min.js" onload="sendFp()"
+  onerror="console.error('Failed to load the script')"></script>

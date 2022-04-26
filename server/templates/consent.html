@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Survey</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+        <div>
+            <p><span style="font-size:17px;color:#0000CD;font-weight:900;">Please carefully read the following consent form and click "Next" to start the survey.</span></p><br>
+            <h2 align="center" style="font-size:14px;">Consent for Exempt Research</h2>
+            <p align="center">The Pennsylvania State University</p>
+            <p>Title of Project: <em>An Investigation on Programmers’ Rust Programming Experience and Challenges</em></p>
+            <p>Principal Investigator: <em>Linhai Song</em></p>
+            <p>Telephone Number: <em>814-863-7566</em></p>
+            <p>You are being invited to participate in a research study. The study is voluntary. Its content and procedure are explained as follows.</p>
+            <ul>
+            <li>This research study is to understand programmers’ Rust programming experience and reveal how it differentiates from the experience when writing programs in traditional programming languages (e.g., C/C++). In addition, the study also aims to investigate the challenges programmers face when they code Rust with the default development environment.</li>
+            <li>Through the Qualtrics portal, you will be asked to visit a website constructed for this study.  Several web pages will be presented to you. You will first fill in your demographics and evaluate your on-board experience in Rust. Then you will inspect several simple Rust programs, identify the embedded programming errors, and explain the reasons for the errors.  In the end, you will answer a few post-session questions.  You are expected to behave as you normally do during your daily Rust programming.  Your responses will be collected by Qualtrics. Additionally, we will record some timing information such as how long it takes for each of your decisions using scripts embedded in the web pages.</li>
+            <li>Efforts will be made to limit the use and the sharing of your personal research information to people who will review the information.  No personally identifiable information will be collected during the study.  Any personal information collected by the Qualtrics platform will not be associated with your answers. The general demographic data collected as part of this study will not be associated with your personal or identifiable information.  In the event of any publication or presentation resulting from the research, no personally identifiable information will be shared. We will do our best to keep your participation in this research study confidential to the extent permitted by law.  However, other people may notice your participation in this study, and some of the records could contain information that personally identifies you.  Reasonable efforts will be made to keep your personal information private.  However, absolute confidentiality cannot be guaranteed. </li>
+            </ul>
+            <p>If you have questions, complaints, or concerns about the research, you can contact Linhai Song at 814-863-7566. If you have questions regarding your rights as a research subject or concerns regarding your privacy, you may contact the Office for Research Protections at 814-865-1775.&nbsp;</p>
+            <p>To participate in the study, you are required to be at least 18 years old, have previous Rust programming experience, and not currently be residing in the EEA. Your participation is voluntary, and you can decide to stop at any time. You do not have to answer any questions that you do not want to answer.&nbsp;</p>
+            <p><br></p>
+            <p><strong>Your participation implies your voluntary consent to participate in the research.&nbsp;</strong></p>
+        </div>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-primary" onclick="redirect()">Next</button>
+    </div>
+  <div class="row">
+      <p>&nbsp;</p>
+  </div>
+  </div>
+  <script>
+      const RD_URL = "{{ rd_url }}"
+
+      function redirect() {
+          let search = window.location.search
+          let url = RD_URL + search
+          window.location.href = url
+      }
+
+      $(function() {
+        let isMobile = window.navigator.maxTouchPoints > 0 || 'ontouchstart' in document
+
+      })
+  </script>
+</body>
+
+</html>

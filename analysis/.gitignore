@@ -1,0 +1,12 @@
+!.gitkeep
+**/*.xlsx
+marking.ipynb
+**/*.xml
+**/*.zip
+**/*.png
+**/*.db
+**/*.pdf
+**/*.csv
+finalized-analysis-jaron-predict.ipynb
+
+__pycache__

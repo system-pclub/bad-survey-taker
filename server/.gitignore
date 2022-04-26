@@ -1,0 +1,6 @@
+/__pycache__/
+**.db
+**.bak
+*.log
+add_query.py
+/venv/

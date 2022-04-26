@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Survey</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    .dot-flashing {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      background-color: dodgerblue;
+      color: dodgerblue;
+      -webkit-animation: dot-flashing 2s infinite linear alternate;
+      animation: dot-flashing 2s infinite linear alternate;
+      -webkit-animation-delay: 1s;
+      animation-delay: 1s;
+    }
+
+    .dot-flashing::before,
+    .dot-flashing::after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      top: 0;
+    }
+
+    .dot-flashing::before {
+      left: -45px;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      background-color: dodgerblue;
+      color: dodgerblue;
+      -webkit-animation: dot-flashing 2s infinite alternate;
+      animation: dot-flashing 2s infinite alternate;
+      -webkit-animation-delay: 0s;
+      animation-delay: 0s;
+    }
+
+    .dot-flashing::after {
+      left: 45px;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      background-color: dodgerblue;
+      color: dodgerblue;
+      -webkit-animation: dot-flashing 2s infinite alternate;
+      animation: dot-flashing 2s infinite alternate;
+      -webkit-animation-delay: 2s;
+      animation-delay: 2s;
+    }
+
+    @-webkit-keyframes dot-flashing {
+      0% {
+        background-color: dodgerblue;
+      }
+
+      50%,
+      100% {
+        background-color: azure;
+      }
+    }
+
+    @keyframes dot-flashing {
+      0% {
+        background-color: dodgerblue;
+      }
+
+      50%,
+      100% {
+        background-color: azure;
+      }
+    }
+
+    .custom-center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .custom-below {
+      margin: 0;
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .custom-font {
+      /* font-family: Arial, Helvetica, sans-serif; */
+      font-size: xx-large;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div id="dots" class="row custom-center">
+      <div class="dot-flashing"></div>
+    </div>
+    <div class="row custom-below">
+      <div id="wait-msg" class="custom-font"></div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="continueModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <p>Click the "Continue" button to access the survey.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="requestRedirect(uid)">Continue</button>
+            <button type="button" class="btn btn-light" data-dismiss="modal" onclick="showCancelMsg()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  <script>
+    const WAIT_SECS = 5
+    let uid = ""
+    let source = ""
+    function showFinalMsg(text) {
+      $("#dots").html("")
+      $("#wait-msg").html(text)
+
+    }
+
+    function showWaitMsg() {
+      $("#wait-msg").html(`Please wait for ${WAIT_SECS} seconds...`)
+    }
+
+    function showCancelMsg() {
+      showFinalMsg("You canceled the survey. Please close the window.")
+    }
+
+    function saveUid() {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      uid = urlSearchParams.get("uid")
+      return uid
+    }
+
+    function saveSource() {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      source = urlSearchParams.get("source")
+    }
+
+    function sendOpenModal() {
+      let url = `//rec.nemo-arxiv.club/gets/modal-request?uid=${uid}`
+      fetch(
+        url, {
+        mode: 'cors',
+        method: 'GET'
+      }).then(response => {
+        })
+      return uid
+    }
+
+    function requestRedirect(uid) {
+      let url = `//rec.nemo-arxiv.club/gets/last-request?source=${source}&uid=${uid}`
+      window.location.href = url
+    }
+
+    $(function () {
+      showWaitMsg()
+      saveSource()
+      saveUid()
+      setTimeout(function() {
+        sendOpenModal()
+        $("#continueModal").modal("show")
+      }, WAIT_SECS * 1000 + 1)
+      
+    })
+
+  </script>
+</body>
+
+</html>

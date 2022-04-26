@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Survey</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <script>
+    const WAIT_SECS = 5
+    let uid = ""
+    let source = ""
+
+    function saveSource() {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      source = urlSearchParams.get("Q_SocialSource")
+    }
+
+    function requestRedirect() {
+      let url = `//rec.nemo-arxiv.club/gets/first-request?Q_SocialSource=${source}`
+      let target
+      fetch(
+          url, {
+          headers: {
+            'content-type': 'application/json',
+          },
+          mode: 'cors',
+          method: 'GET'
+        }).then(response => {
+          response.json().then(response => {
+            let target = response["url"]
+            window.location.href = target
+          })
+        })
+    }
+
+    $(function () {
+      saveSource()
+      requestRedirect()      
+    })
+
+  </script>
+</body>
+
+</html>
